@@ -11,7 +11,7 @@ import polars as pl
 from numpy import array_split
 import jmespath
 
-from errors import APIError
+from .errors import APIError
 
 use_pmg, use_ase = False, False
 
