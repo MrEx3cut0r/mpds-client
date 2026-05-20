@@ -1,7 +1,7 @@
 import unittest
 import os
 import polars as pl
-from export_MPDS import MPDSExport
+from .export_MPDS import MPDSExport
 
 
 class TestMPDSExport(unittest.TestCase):

@@ -2,7 +2,7 @@
 from setuptools import setup
 
 install_requires = [
-    'httplib2',
+    'requests',
     'ujson',
     'numpy',
     'polars',

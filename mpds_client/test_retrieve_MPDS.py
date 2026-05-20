@@ -3,12 +3,11 @@ import unittest
 
 import polars as pl
 
-import httplib2
-import ujson as json
+import requests
 from jsonschema import validate, Draft4Validator
 from jsonschema.exceptions import ValidationError
 
-from retrieve_MPDS import MPDSDataRetrieval
+from .retrieve_MPDS import MPDSDataRetrieval
 import logging
 
 
@@ -17,13 +16,10 @@ class MPDSDataRetrievalTest(unittest.TestCase):
     def setUpClass(cls):
         # warnings.filterwarnings("ignore", category=ResourceWarning, message="unclosed.*<ssl.SSLSocket.*>")
 
-        network = httplib2.Http()
-        response, content = network.request(
-            "https://developer.mpds.io/mpds.schema.json"
-        )
-        assert response.status == 200
+        response = requests.get("https://developer.mpds.io/mpds.schema.json")
+        assert response.status_code == 200
 
-        cls.schema = json.loads(content)
+        cls.schema = response.json()
         Draft4Validator.check_schema(cls.schema)
 
     def test_valid_answer(self):

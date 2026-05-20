@@ -5,7 +5,7 @@ import math
 import warnings
 from urllib.parse import urlencode
 
-import httplib2
+import requests
 import ujson as json
 import polars as pl
 from numpy import array_split
@@ -127,8 +127,6 @@ class MPDSDataRetrieval(object):
         """
         self.api_key = api_key if api_key else os.environ["MPDS_KEY"]
 
-        self.network = httplib2.Http()
-
         self.endpoint = endpoint or self.endpoint
         self.dtype = dtype or MPDSDataTypes.PEER_REVIEWED
         self.verbose = verbose if verbose is not None else self.verbose
@@ -154,16 +152,14 @@ class MPDSDataRetrieval(object):
         if self.debug:
             print('curl -XGET -HKey:%s "%s"' % (self.api_key, uri))
 
-        response, content = self.network.request(
-            uri=uri, method="GET", headers={"Key": self.api_key}
-        )
+        response = requests.get(uri, headers={"Key": self.api_key})
 
-        if response.status != 200:
-            return {"error": content, "code": response.status}
+        if response.status_code != 200:
+            return {"error": response.text, "code": response.status_code}
 
         try:
-            content = json.loads(content)
-        except:
+            content = json.loads(response.text)
+        except (ValueError, json.JSONDecodeError):
             return {"error": "Unreadable data obtained"}
 
         if content.get("error"):
