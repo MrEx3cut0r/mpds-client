@@ -13,6 +13,35 @@ import logging
 
 
 class MPDSDataRetrievalTest(unittest.TestCase):
+    def test_normalize_query_elements_list(self):
+        client = MPDSDataRetrieval.__new__(MPDSDataRetrieval)
+        result = client._normalize_query({"elements": ["Sr", "Ti", "O"], "props": "band gap"})
+        self.assertEqual(result["elements"], "Sr-Ti-O")
+        self.assertEqual(result["props"], "band gap")
+
+    def test_normalize_query_elements_tuple(self):
+        client = MPDSDataRetrieval.__new__(MPDSDataRetrieval)
+        result = client._normalize_query({"elements": ("Ti", "O"), "props": "atomic structure"})
+        self.assertEqual(result["elements"], "Ti-O")
+
+    def test_normalize_query_classes_list(self):
+        client = MPDSDataRetrieval.__new__(MPDSDataRetrieval)
+        result = client._normalize_query({"elements": "Ti-O", "classes": ["perovskite", "conductor"]})
+        self.assertEqual(result["classes"], "perovskite,conductor")
+
+    def test_normalize_query_no_list(self):
+        client = MPDSDataRetrieval.__new__(MPDSDataRetrieval)
+        query = {"elements": "K-Ag", "classes": "iodide", "props": "heat capacity"}
+        result = client._normalize_query(query)
+        self.assertEqual(result, query)
+
+    def test_normalize_query_does_not_mutate_original(self):
+        client = MPDSDataRetrieval.__new__(MPDSDataRetrieval)
+        original = {"elements": ["Sr", "Ti", "O"]}
+        result = client._normalize_query(original)
+        self.assertIsInstance(original["elements"], list)
+        self.assertEqual(result["elements"], "Sr-Ti-O")
+
     @classmethod
     def setUpClass(cls):
         # warnings.filterwarnings("ignore", category=ResourceWarning, message="unclosed.*<ssl.SSLSocket.*>")

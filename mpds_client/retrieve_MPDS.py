@@ -134,7 +134,7 @@ class MPDSDataRetrieval(object):
         self.verbose = verbose if verbose is not None else self.verbose
         self.debug = debug or self.debug
     
-    def normalize_query(self, query):
+    def _normalize_query(self, query):
         """Ensure 'elements' and 'classes' are joined strings, not lists.
 
         The MPDS API expects:
@@ -152,7 +152,7 @@ class MPDSDataRetrieval(object):
 
 
     def _request(self, raw_query, phases=None, page=0, pagesize=None):
-        query = self.normalize_query(raw_query)
+        query = self._normalize_query(raw_query)
         phases = ",".join([str(int(x)) for x in phases]) if phases else ""
 
         uri = (
