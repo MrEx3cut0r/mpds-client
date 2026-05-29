@@ -159,7 +159,7 @@ class MPDSDataRetrieval(object):
 
         try:
             content = json.loads(response.text)
-        except (ValueError, json.JSONDecodeError):
+        except ValueError:
             return {"error": "Unreadable data obtained"}
 
         if content.get("error"):
