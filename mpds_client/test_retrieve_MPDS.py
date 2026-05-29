@@ -42,6 +42,18 @@ class MPDSDataRetrievalTest(unittest.TestCase):
         self.assertIsInstance(original["elements"], list)
         self.assertEqual(result["elements"], "Sr-Ti-O")
 
+    def test_normalize_query_elements_list_is_empty(self):
+        client = MPDSDataRetrieval.__new__(MPDSDataRetrieval)
+        original = {"elements": []}
+        with self.assertRaises(ValueError):
+            client._normalize_query(original)
+
+    def test_normalize_query_classes_list_is_empty(self):
+        client = MPDSDataRetrieval.__new__(MPDSDataRetrieval)
+        original = {"classes": []}
+        with self.assertRaises(ValueError):
+            client._normalize_query(original)
+
     @classmethod
     def setUpClass(cls):
         # warnings.filterwarnings("ignore", category=ResourceWarning, message="unclosed.*<ssl.SSLSocket.*>")

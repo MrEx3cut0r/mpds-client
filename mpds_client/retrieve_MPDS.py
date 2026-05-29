@@ -133,23 +133,31 @@ class MPDSDataRetrieval(object):
         self.dtype = dtype or MPDSDataTypes.PEER_REVIEWED
         self.verbose = verbose if verbose is not None else self.verbose
         self.debug = debug or self.debug
-    
+
     def _normalize_query(self, query):
         """Ensure 'elements' and 'classes' are joined strings, not lists.
 
         The MPDS API expects:
         - elements: dash-separated string  e.g. "Sr-Ti-O"
-        - classes:  comma-separated string  e.g. "perovskite, conductor"
+        - classes:  comma-separated string  e.g. "perovskite,conductor"
 
         Passing raw lists causes unsupported-symbol errors.
         """
         out = dict(query)
-        if 'elements' in out and isinstance(out['elements'], (list, tuple)):
-            out['elements'] = '-'.join(out['elements'])
-        if 'classes' in out and isinstance(out['classes'], (list, tuple)):
-            out['classes'] = ','.join(out['classes'])
-        return out
 
+        if el := out.get('elements'):
+            if isinstance(el, (list, tuple)):
+                out['elements'] = '-'.join(el)
+        elif el is not None:
+            raise ValueError("'elements' must not be empty")
+
+        if cl := out.get('classes'):
+            if isinstance(cl, (list, tuple)):
+                out['classes'] = ','.join(cl)
+        elif cl is not None:
+            raise ValueError("'classes' must not be empty")
+
+        return out
 
     def _request(self, raw_query, phases=None, page=0, pagesize=None):
         query = self._normalize_query(raw_query)
